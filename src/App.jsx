@@ -113,7 +113,7 @@ function App() {
           if (
             permiso === "granted"
           ) {
-
+            console.log("MESSAGING:", messaging);
             const token =
               await getToken(
                 messaging,
