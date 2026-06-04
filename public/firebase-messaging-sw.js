@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 importScripts(
   "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"
 );
@@ -18,7 +20,7 @@ firebase.initializeApp({
     "flete-app-112ff.firebasestorage.app",
 
   messagingSenderId:
-    "950913762831",
+    "950913762831",   
 
   appId:
     "1:950913762831:web:33b4d90abdc0278ea9457a",
