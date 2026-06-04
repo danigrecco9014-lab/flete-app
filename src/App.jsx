@@ -76,7 +76,7 @@ import NavMenu from "./Components/NavMenu";
 import AppRoutes from "./routes/AppRoutes";
 
 import { getToken } from "firebase/messaging";
-import { onMessage } from "firebase/messaging";
+// import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase/firebase";
 
 function App() {
@@ -87,11 +87,11 @@ function App() {
   // =========================
 
   useEffect(() => {
-    onMessage(messaging, (payload) => {
-      console.log("MENSAJE:", payload);
+    // onMessage(messaging, (payload) => {
+    //   console.log("MENSAJE:", payload);
 
-      alert(payload.notification.title + "\n" + payload.notification.body);
-    });
+    //   alert(payload.notification.title + "\n" + payload.notification.body);
+    // });
     // SOLO SI HAY LOGIN
     if (!usuarioActivo) return;
 
