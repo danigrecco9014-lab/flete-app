@@ -11,7 +11,7 @@ import Perfil from "../Pages/Perfil";
 import Recordatorios from "../Pages/Recordatorios"; 
 import Fondo from "../Pages/Fondo";
 
-import ProtectedRoute from "./ProtectedRoute";
+import ProtectedRoute from "./protectedRoute";
 
 function AppRoutes() {
   const user = JSON.parse(localStorage.getItem("usuarioActivo"));
