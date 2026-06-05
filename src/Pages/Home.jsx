@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import truck from "../assets/transporte.png";
-// import { getToken } from "firebase/messaging";
-// import { messaging } from "../firebase/firebase";
+import { getToken } from "firebase/messaging";
+import { messaging } from "../firebase/firebase";
 import Nav from "../Components/NavMenu";
 import Hora from "../Components/Hora";
 
@@ -38,7 +38,7 @@ function Home() {
   // =========================
   // STATES
   // =========================
-// const [notifActivadas, setNotifActivadas] = useState(false);
+const [notifActivadas, setNotifActivadas] = useState(false);
   const [usuarioActivo, setUsuarioActivo] = useState(null);
 
   const [pedidosHoy, setPedidosHoy] = useState([]);
@@ -277,28 +277,28 @@ function Home() {
     }
   };
 
-//   const activarNotificaciones = async () => {
-//   try {
-//     const permiso = await Notification.requestPermission();
+  const activarNotificaciones = async () => {
+  try {
+    const permiso = await Notification.requestPermission();
 
-//     console.log("PERMISO:", permiso);
+    console.log("PERMISO:", permiso);
 
-//     if (permiso === "granted") {
-//       const token = await getToken(messaging, {
-//         vapidKey:
-//           "BJOGGYT1HkfRteB981sRehHwX2ZFe834DaBN8HvDhdtOg1Fd0HL3Fb9dSy-4t60gAHG--qbnm2joqKJltnOJPw0",
-//       });
+    if (permiso === "granted") {
+      const token = await getToken(messaging, {
+        vapidKey:
+          "BJOGGYT1HkfRteB981sRehHwX2ZFe834DaBN8HvDhdtOg1Fd0HL3Fb9dSy-4t60gAHG--qbnm2joqKJltnOJPw0",
+      });
 
-//       console.log("TOKEN FCM:", token);
+      console.log("TOKEN FCM:", token);
 
-//       setNotifActivadas(true);
+      setNotifActivadas(true);
 
-//       alert("🔔 Notificaciones activadas");
-//     }
-//   } catch (error) {
-//     console.log("ERROR NOTIF:", error);
-//   }
-// };
+      alert("🔔 Notificaciones activadas");
+    }
+  } catch (error) {
+    console.log("ERROR NOTIF:", error);
+  }
+};
 
   console.log("USE EFFECT HOME");
 
