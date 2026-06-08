@@ -38,9 +38,9 @@ function Home() {
   // =========================
   // STATES
   // =========================
-const [notifActivadas, setNotifActivadas] = useState(false);
+  const [notifActivadas, setNotifActivadas] = useState(false);
   const [usuarioActivo, setUsuarioActivo] = useState(null);
-
+  const [mostrarSinPedidos, setMostrarSinPedidos] = useState(false);
   const [pedidosHoy, setPedidosHoy] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -278,27 +278,27 @@ const [notifActivadas, setNotifActivadas] = useState(false);
   };
 
   const activarNotificaciones = async () => {
-  try {
-    const permiso = await Notification.requestPermission();
+    try {
+      const permiso = await Notification.requestPermission();
 
-    console.log("PERMISO:", permiso);
+      console.log("PERMISO:", permiso);
 
-    if (permiso === "granted") {
-      const token = await getToken(messaging, {
-        vapidKey:
-          "BJOGGYT1HkfRteB981sRehHwX2ZFe834DaBN8HvDhdtOg1Fd0HL3Fb9dSy-4t60gAHG--qbnm2joqKJltnOJPw0",
-      });
+      if (permiso === "granted") {
+        const token = await getToken(messaging, {
+          vapidKey:
+            "BJOGGYT1HkfRteB981sRehHwX2ZFe834DaBN8HvDhdtOg1Fd0HL3Fb9dSy-4t60gAHG--qbnm2joqKJltnOJPw0",
+        });
 
-      console.log("TOKEN FCM:", token);
+        console.log("TOKEN FCM:", token);
 
-      setNotifActivadas(true);
+        setNotifActivadas(true);
 
-      alert("🔔 Notificaciones activadas");
+        alert("🔔 Notificaciones activadas");
+      }
+    } catch (error) {
+      console.log("ERROR NOTIF:", error);
     }
-  } catch (error) {
-    console.log("ERROR NOTIF:", error);
-  }
-};
+  };
 
   console.log("USE EFFECT HOME");
 
@@ -389,13 +389,12 @@ const [notifActivadas, setNotifActivadas] = useState(false);
     <div className="min-h-screen flex flex-col bg-gray-200  pb-32">
       {/* HEADER */}
       <div className="flex justify-between bg-gray-50 p-4">
-
         <div>
           <div>
             <h1 className="text-2xl font-bold">FLETAPP 📦</h1>
           </div>
         </div>
-{/* <button
+        {/* <button
   onClick={activarNotificaciones}
   className="bg-black text-white px-3 py-2 rounded-xl"
 >
@@ -422,8 +421,6 @@ const [notifActivadas, setNotifActivadas] = useState(false);
           )}
         </Link>
       </div>
-
-      
 
       {/* HERO */}
       <div className="flex items-center justify-between">
@@ -624,11 +621,68 @@ const [notifActivadas, setNotifActivadas] = useState(false);
           Agregar Pedido
         </button>
       </div>
+{/* MODAL SIN PEDIDOS */}
+{mostrarSinPedidos && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+    <div className="bg-white rounded-3xl p-8 w-[90%] max-w-sm text-center shadow-2xl">
 
+      <div className="bg-orange-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto">
+        <AlertTriangle size={60} className="text-orange-500" />
+      </div>
+
+      <h2 className="text-2xl font-bold mt-6">
+        No hay pedidos
+      </h2>
+
+      <p className="text-gray-500 mt-2">
+        Todavía no agregaste ningún pedido para hoy.
+      </p>
+
+      <div className="flex gap-3 mt-6">
+        <button
+          onClick={() => setMostrarSinPedidos(false)}
+          className="
+            flex-1
+            bg-gray-200
+            py-3
+            rounded-2xl
+            font-semibold
+          "
+        >
+          Cancelar
+        </button>
+
+        <button
+          onClick={() => {
+            setMostrarSinPedidos(false);
+            setMostrarFormulario(true);
+          }}
+          className="
+            flex-1
+            bg-emerald-600
+            text-white
+            py-3
+            rounded-2xl
+            font-semibold
+          "
+        >
+          Agregar pedido
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       {/* BOTON FINALIZAR */}
       <div className="text-center mb-10">
         <button
-          onClick={() => setMostrarModal(true)}
+          onClick={() => {
+            if (pedidosHoy.length === 0) {
+              setMostrarSinPedidos(true);
+              return;
+            }
+
+            setMostrarModal(true);
+          }}
           className="
             bg-black
             text-white
@@ -962,6 +1016,3 @@ const [notifActivadas, setNotifActivadas] = useState(false);
 }
 
 export default Home;
-
-
- 
