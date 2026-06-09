@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import jsPDF from "jspdf";
 import truck from "../assets/transporte.png";
-import { getToken } from "firebase/messaging";
-import { messaging } from "../firebase/firebase";
 import Nav from "../Components/NavMenu";
 import Hora from "../Components/Hora";
 
@@ -22,6 +20,7 @@ import {
 } from "lucide-react";
 
 import { db } from "../firebase/firebase";
+
 import {
   collection,
   getDocs,
@@ -32,13 +31,14 @@ import {
   query,
   where,
   onSnapshot,
+  deleteDoc,
 } from "firebase/firestore";
 
 function Home() {
   // =========================
   // STATES
   // =========================
-  const [notifActivadas, setNotifActivadas] = useState(false);
+ 
   const [usuarioActivo, setUsuarioActivo] = useState(null);
   const [mostrarSinPedidos, setMostrarSinPedidos] = useState(false);
   const [pedidosHoy, setPedidosHoy] = useState([]);
@@ -68,9 +68,11 @@ function Home() {
   const [nuevoPedido, setNuevoPedido] = useState({
     cliente: "",
     direccion: "",
+    local: "Megatone",
     electrodomestico: "",
     costo_envio: "",
     comision: "",
+    medio_pago: "Efectivo",
     escaleras: "",
   });
 
@@ -199,50 +201,99 @@ function Home() {
     }));
   };
 
-  // =========================
-  // GUARDAR PEDIDO
-  // =========================
+ // =========================
+// REABRIR DIA
+// =========================
 
-  const guardarPedido = async (e) => {
-    e.preventDefault();
+const reabrirDiaSiExiste = async () => {
+  try {
+    const inicioDia = new Date();
+    inicioDia.setHours(0, 0, 0, 0);
 
-    if (guardando) return;
+    const finDia = new Date();
+    finDia.setHours(23, 59, 59, 999);
 
-    setGuardando(true);
+    const q = query(
+      collection(db, "fondo"),
+      where("fecha", ">=", Timestamp.fromDate(inicioDia)),
+      where("fecha", "<=", Timestamp.fromDate(finDia))
+    );
 
-    try {
-      const nuevo = {
-        ...nuevoPedido,
+    const snapshot = await getDocs(q);
 
-        costo_envio: Number(nuevoPedido.costo_envio),
+    if (!snapshot.empty) {
+      for (const documento of snapshot.docs) {
+        await deleteDoc(doc(db, "fondo", documento.id));
+      }
 
-        comision: Number(nuevoPedido.comision),
-
-        escaleras: Number(nuevoPedido.escaleras),
-
-        fecha: Timestamp.fromDate(fechaHoy),
-
-        realizado: false,
-      };
-
-      await addDoc(collection(db, "idPedido"), nuevo);
-
-      setMostrarFormulario(false);
-
-      setNuevoPedido({
-        cliente: "",
-        direccion: "",
-        electrodomestico: "",
-        costo_envio: "",
-        comision: "",
-        escaleras: "",
-      });
-    } catch (error) {
-      console.error("Error al guardar pedido:", error);
-    } finally {
-      setGuardando(false);
+      setDatosGuardados(false);
     }
-  };
+  } catch (error) {
+    console.error("Error reabriendo día:", error);
+  }
+};
+// =========================
+// GUARDAR PEDIDO
+// =========================
+
+const guardarPedido = async (e) => {
+  e.preventDefault();
+
+  if (guardando) return;
+
+  setGuardando(true);
+
+  try {
+    const nuevo = {
+      cliente: nuevoPedido.cliente,
+      direccion: nuevoPedido.direccion,
+      electrodomestico: nuevoPedido.electrodomestico,
+
+      local: nuevoPedido.local,
+
+      costo_envio: Number(nuevoPedido.costo_envio),
+
+      comision: Number(nuevoPedido.comision),
+
+      escaleras: Number(nuevoPedido.escaleras) || 0,
+
+      medio_pago: nuevoPedido.medio_pago,
+
+      fecha: Timestamp.fromDate(new Date()),
+
+      realizado: false,
+    };
+
+    // SI EL DIA YA ESTABA GUARDADO
+// LO REABRIMOS AUTOMATICAMENTE
+
+if (datosGuardados) {
+  await reabrirDiaSiExiste();
+}
+
+    await addDoc(collection(db, "idPedido"), nuevo);
+
+    // CERRAR MODAL
+    setMostrarFormulario(false);
+
+    // LIMPIAR FORM
+    setNuevoPedido({
+      cliente: "",
+      direccion: "",
+       local: "Megatone",
+      electrodomestico: "",
+      costo_envio: "",
+      comision: "",
+      escaleras: "",
+      medio_pago: "Efectivo",
+    });
+
+  } catch (error) {
+    console.error("Error al guardar pedido:", error);
+  } finally {
+    setGuardando(false);
+  }
+};
 
   // =========================
   // VERIFICAR CIERRE
@@ -269,38 +320,16 @@ function Home() {
       const snapshot = await getDocs(q);
 
       // SI EXISTE
-      if (!snapshot.empty) {
-        setDatosGuardados(true);
-      }
+     if (!snapshot.empty) {
+  setDatosGuardados(true);
+} else {
+  setDatosGuardados(false);
+}
     } catch (error) {
       console.error("Error verificando cierre:", error);
     }
   };
 
-  const activarNotificaciones = async () => {
-    try {
-      const permiso = await Notification.requestPermission();
-
-      console.log("PERMISO:", permiso);
-
-      if (permiso === "granted") {
-        const token = await getToken(messaging, {
-          vapidKey:
-            "BJOGGYT1HkfRteB981sRehHwX2ZFe834DaBN8HvDhdtOg1Fd0HL3Fb9dSy-4t60gAHG--qbnm2joqKJltnOJPw0",
-        });
-
-        console.log("TOKEN FCM:", token);
-
-        setNotifActivadas(true);
-
-        alert("🔔 Notificaciones activadas");
-      }
-    } catch (error) {
-      console.log("ERROR NOTIF:", error);
-    }
-  };
-
-  console.log("USE EFFECT HOME");
 
   // =========================
   // TOTALES
@@ -331,13 +360,129 @@ function Home() {
 
   const gananciaNeta = totalGenerado - totalComisiones;
 
-  // const unTercio =
-  //   (gananciaNeta / 4) +
-  //   (totalEscaleras / 3);
+ 
 
   const fondo = gananciaNeta / 4;
 
   const unTercio = (gananciaNeta - fondo) / 3 + totalEscaleras / 3;
+
+// =========================
+// GENERAR PDF + WHATSAPP
+// =========================
+
+const compartirResumenWhatsApp = () => {
+  const doc = new jsPDF();
+
+  let y = 20;
+
+  doc.setFontSize(22);
+  doc.text("FLETAPP - Resumen del Día", 20, y);
+
+  y += 15;
+
+  doc.setFontSize(12);
+
+  doc.text(`Fecha: ${fecha}`, 20, y);
+  y += 10;
+
+  doc.text(`Pedidos realizados: ${totalRealizados}`, 20, y);
+  y += 10;
+
+  doc.text(
+    `Total generado: ${totalGenerado.toLocaleString("es-AR")}`,
+    20,
+    y
+  );
+
+  y += 10;
+
+  doc.text(
+    `Comisiones: ${totalComisiones.toLocaleString("es-AR")}`,
+    20,
+    y
+  );
+
+  y += 10;
+
+  doc.text(
+    `Total escaleras: ${totalEscaleras.toLocaleString("es-AR")}`,
+    20,
+    y
+  );
+
+  y += 10;
+
+  doc.text(
+    `Ganancia neta: ${gananciaNeta.toLocaleString("es-AR")}`,
+    20,
+    y
+  );
+
+  y += 10;
+
+  doc.text(
+    `Monto por persona: ${unTercio.toLocaleString("es-AR")}`,
+    20,
+    y
+  );
+
+  y += 20;
+
+  doc.setFontSize(16);
+  doc.text("Pedidos:", 20, y);
+
+  y += 10;
+
+  pedidosHoy.forEach((pedido, index) => {
+    doc.setFontSize(11);
+
+    doc.text(
+      `${index + 1}. ${pedido.cliente} - ${pedido.electrodomestico}`,
+      20,
+      y
+    );
+
+    y += 8;
+
+    doc.text(
+      `Pago: ${pedido.medio_pago} | $${pedido.costo_envio}`,
+      25,
+      y
+    );
+
+    y += 12;
+
+    // NUEVA PAGINA SI SE LLENA
+    if (y > 260) {
+      doc.addPage();
+      y = 20;
+    }
+  });
+
+  // GENERAR PDF
+  const pdfBlob = doc.output("blob");
+
+  const file = new File(
+    [pdfBlob],
+    `Resumen-${hoy}.pdf`,
+    {
+      type: "application/pdf",
+    }
+  );
+
+  // SHARE API
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    navigator.share({
+      title: "Resumen del día",
+      text: "Resumen generado desde FLETAPP",
+      files: [file],
+    });
+  } else {
+    // FALLBACK
+    doc.save(`Resumen-${hoy}.pdf`);
+  }
+};
+
   // =========================
   // FINALIZAR DIA
   // =========================
@@ -384,7 +529,7 @@ function Home() {
   // =========================
   // JSX
   // =========================
-  console.log("HOME RENDER");
+  
   return (
     <div className="min-h-screen flex flex-col bg-gray-200  pb-32">
       {/* HEADER */}
@@ -394,12 +539,7 @@ function Home() {
             <h1 className="text-2xl font-bold">FLETAPP 📦</h1>
           </div>
         </div>
-        {/* <button
-  onClick={activarNotificaciones}
-  className="bg-black text-white px-3 py-2 rounded-xl"
->
-  🔔 Activar notificaciones
-</button> */}
+ 
         <Link to="/recordatorios" className="p-2 relative">
           <Bell />
 
@@ -556,14 +696,17 @@ function Home() {
                     </p>
 
                     <p className="text-sm flex items-center">
-                      <DollarSign className="mr-1" size={16} />
+  <DollarSign className="mr-1" size={16} />
 
-                      {Number(pedido.costo_envio).toLocaleString("es-AR", {
-                        style: "currency",
-                        currency: "ARS",
-                      })}
-                    </p>
+  {Number(pedido.costo_envio).toLocaleString("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  })}
+</p>
 
+<p className="text-sm flex items-center">
+  💳 {pedido.medio_pago}
+</p>
                     <p className="text-sm flex items-center">
                       <DollarSign className="mr-1" size={16} />
 
@@ -702,7 +845,7 @@ function Home() {
       {/* ========================= */}
 
       {mostrarFormulario && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 mb-24">
           <div className="bg-white w-[90%] max-w-md rounded-3xl p-6 shadow-xl">
             <h2 className="text-2xl font-bold mb-5">Nuevo Pedido</h2>
 
@@ -736,6 +879,20 @@ function Home() {
                 className="w-full border rounded-2xl px-4 py-3"
                 required
               />
+              <select
+                  name="local"
+                  value={nuevoPedido.local}
+                  onChange={handleChange}
+                  className="w-full border rounded-2xl px-4 py-3"
+                >
+                  <option value="Megatone">
+                    Megatone
+                  </option>
+
+                  <option value="Cetrogar">
+                    Cetrogar
+                  </option>
+                </select>
 
               <input
                 type="number"
@@ -746,7 +903,20 @@ function Home() {
                 className="w-full border rounded-2xl px-4 py-3"
                 required
               />
+              <select
+                name="medio_pago"
+                value={nuevoPedido.medio_pago}
+                onChange={handleChange}
+                className="w-full border rounded-2xl px-4 py-3"
+              >
+                <option value="Efectivo">
+                  Efectivo
+                </option>
 
+                <option value="Transferencia">
+                  Transferencia
+                </option>
+              </select>
               <input
                 type="number"
                 name="comision"
@@ -775,12 +945,20 @@ function Home() {
                   Cancelar
                 </button>
 
-                <button
-                  type="submit"
-                  className="bg-emerald-600 text-white px-4 py-2 rounded-xl"
-                >
-                  Guardar
-                </button>
+               <button
+  type="submit"
+  disabled={guardando}
+  className="
+    bg-emerald-600
+    text-white
+    px-4
+    py-2
+    rounded-xl
+    disabled:opacity-50
+  "
+>
+  {guardando ? "Guardando..." : "Guardar"}
+</button>
               </div>
             </form>
           </div>
@@ -927,8 +1105,35 @@ function Home() {
             <p className="text-gray-500 mt-2">
               El resumen del día fue guardado correctamente.
             </p>
+<div className="mt-6 flex flex-col gap-3">
+  <button
+    onClick={compartirResumenWhatsApp}
+    className="
+      w-full
+      bg-emerald-600
+      text-white
+      py-3
+      rounded-2xl
+      font-semibold
+    "
+  >
+    Compartir PDF por WhatsApp
+  </button>
 
-            <button
+  <button
+    onClick={() => setMostrarExito(false)}
+    className="
+      w-full
+      bg-gray-200
+      py-3
+      rounded-2xl
+      font-semibold
+    "
+  >
+    Continuar
+  </button>
+</div>
+            {/* <button
               onClick={() => setMostrarExito(false)}
               className="
                 mt-6
@@ -941,7 +1146,7 @@ function Home() {
               "
             >
               Continuar
-            </button>
+            </button> */}
           </div>
         </div>
       )}
