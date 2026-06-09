@@ -417,204 +417,451 @@ const fecha = hoy.toLocaleDateString("es-AR", {
   // =========================
  
 
-  const compartirResumenWhatsApp = async () => {
-    const { default: jsPDF } = await import("jspdf");
-const { default: autoTable } = await import("jspdf-autotable");
-    try {
-      const doc = new jsPDF();
+//   const compartirResumenWhatsApp = async () => {
+//     const { default: jsPDF } = await import("jspdf");
+// const { default: autoTable } = await import("jspdf-autotable");
+//     try {
+//       const doc = new jsPDF();
 
-      // =========================
-      // HEADER
-      // =========================
+//       // =========================
+//       // HEADER
+//       // =========================
 
-      doc.setFillColor(16, 185, 129);
+//       doc.setFillColor(16, 185, 129);
 
-      doc.roundedRect(0, 0, 220, 40, 0, 0, "F");
+//       doc.roundedRect(0, 0, 220, 40, 0, 0, "F");
 
-      doc.setTextColor(255, 255, 255);
+//       doc.setTextColor(255, 255, 255);
 
-      doc.setFontSize(24);
+//       doc.setFontSize(24);
 
-      doc.text("FLETAPP 📦", 20, 20);
+//       doc.text("FLETAPP 📦", 20, 20);
 
-      doc.setFontSize(12);
+//       doc.setFontSize(12);
 
-      doc.text("Resumen del Día", 20, 30);
+//       doc.text("Resumen del Día", 20, 30);
 
-      // RESET COLOR
-      doc.setTextColor(0, 0, 0);
+//       // RESET COLOR
+//       doc.setTextColor(0, 0, 0);
 
-      // =========================
-      // FECHA
-      // =========================
+//       // =========================
+//       // FECHA
+//       // =========================
+
+//       doc.setFontSize(11);
+
+//       doc.text(`Fecha: ${fecha}`, 20, 55);
+
+//       // =========================
+//       // CARDS
+//       // =========================
+
+//       const crearCard = (titulo, valor, x, y, color) => {
+//         doc.setFillColor(...color);
+
+//         doc.roundedRect(x, y, 80, 28, 5, 5, "F");
+
+//         doc.setTextColor(255, 255, 255);
+
+//         doc.setFontSize(10);
+
+//         doc.text(titulo, x + 5, y + 10);
+
+//         doc.setFontSize(14);
+
+//         doc.text(valor, x + 5, y + 20);
+//       };
+
+//    crearCard(
+//   "Ganancia neta",
+//   (gananciaNeta + totalEscaleras).toLocaleString("es-AR", {
+//     style: "currency",
+//     currency: "ARS",
+//   }),
+//   110,
+//   65,
+//   [59, 130, 246]
+// );
+//     crearCard(
+//   "Escaleras",
+//   totalEscaleras.toLocaleString("es-AR", {
+//     style: "currency",
+//     currency: "ARS",
+//   }),
+//   110,
+//   100,
+//   [14, 165, 233]
+// );
+
+//       crearCard(
+//         "Comisiones",
+//         totalComisiones.toLocaleString("es-AR", {
+//           style: "currency",
+//           currency: "ARS",
+//         }),
+//         20,
+//         100,
+//         [249, 115, 22]
+//       );
+
+//       crearCard(
+//         "Monto por persona",
+//         unTercio.toLocaleString("es-AR", {
+//           style: "currency",
+//           currency: "ARS",
+//         }),
+//         110,
+//         100,
+//         [139, 92, 246]
+//       );
+
+//       // RESET
+//       doc.setTextColor(0, 0, 0);
+
+//       // =========================
+//       // TITULO TABLA
+//       // =========================
+
+//       doc.setFontSize(18);
+
+//       // doc.text("Pedidos del Día", 20, 145);
+// doc.text("Pedidos del Día", 20, 185);
+//       // =========================
+//       // TABLA
+//       // =========================
+
+//       autoTable(doc, {
+//       startY: 195,
+
+//         head: [
+//           [
+//             "Cliente",
+//             "Electrodoméstico",
+//             "Pago",
+//             "Costo",
+//           ],
+//         ],
+
+//         body: pedidosHoy.map((pedido) => [
+//           pedido.cliente,
+//           pedido.electrodomestico,
+//           pedido.medio_pago,
+//           Number(pedido.costo_envio).toLocaleString("es-AR", {
+//             style: "currency",
+//             currency: "ARS",
+//           }),
+//         ]),
+
+//         theme: "grid",
+
+//         headStyles: {
+//           fillColor: [16, 185, 129],
+//           textColor: [255, 255, 255],
+//           fontStyle: "bold",
+//         },
+
+//         styles: {
+//           fontSize: 10,
+//           cellPadding: 4,
+//         },
+
+//         alternateRowStyles: {
+//           fillColor: [245, 245, 245],
+//         },
+//       });
+
+//       // =========================
+//       // FOOTER
+//       // =========================
+
+//       const finalY = doc.lastAutoTable.finalY || 220;
+
+//       doc.setFontSize(10);
+
+//       doc.setTextColor(120);
+
+//       doc.text(
+//         "Generado automáticamente por FLETAPP",
+//         20,
+//         finalY + 20
+//       );
+
+//       // =========================
+//       // SHARE
+//       // =========================
+
+//       const pdfBlob = doc.output("blob");
+
+//       const file = new File(
+//         [pdfBlob],
+//         // `Resumen-${hoy}.pdf`,
+//         `Resumen-${fechaISO}.pdf`,
+//         {
+//           type: "application/pdf",
+//         }
+//       );
+
+//       if (navigator.share && navigator.canShare({ files: [file] })) {
+//         await navigator.share({
+//           title: "Resumen del Día",
+//           text: "Resumen generado desde FLETAPP",
+//           files: [file],
+//         });
+//       } else {
+//         doc.save(`Resumen-${hoy}.pdf`);
+//       }
+//     } catch (error) {
+//       console.error("Error compartiendo PDF:", error);
+//     }
+//   };
+const compartirResumenWhatsApp = async () => {
+  const { default: jsPDF } = await import("jspdf");
+  const { default: autoTable } = await import("jspdf-autotable");
+
+  try {
+    const doc = new jsPDF();
+
+    // =========================
+    // HEADER
+    // =========================
+
+    doc.setFillColor(16, 185, 129);
+
+    doc.rect(0, 0, 220, 35, "F");
+
+    doc.setTextColor(255, 255, 255);
+
+    doc.setFontSize(24);
+
+    doc.text("FLETAPP 📦", 20, 20);
+
+    doc.setFontSize(12);
+
+    doc.text("Resumen del Día", 20, 28);
+
+    // RESET
+    doc.setTextColor(0, 0, 0);
+
+    // =========================
+    // FECHA
+    // =========================
+
+    doc.setFontSize(11);
+
+    doc.text(`Fecha: ${fecha}`, 20, 48);
+
+    // =========================
+    // TITULO PEDIDOS
+    // =========================
+
+    doc.setFontSize(18);
+
+    doc.text("Pedidos realizados", 20, 65);
+
+    // =========================
+    // TABLA PEDIDOS
+    // =========================
+
+    autoTable(doc, {
+      startY: 75,
+
+      head: [[
+        "Cliente",
+        "Dirección",
+        "Electrodoméstico",
+        "Pago",
+        "Escaleras",
+        "Comisión",
+        "Total"
+      ]],
+
+      body: realizados.map((pedido) => [
+        pedido.cliente,
+        pedido.direccion,
+        pedido.electrodomestico,
+        pedido.medio_pago,
+
+        Number(pedido.escaleras || 0).toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+        }),
+
+        Number(pedido.comision || 0).toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+        }),
+
+        Number(pedido.costo_envio || 0).toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+        }),
+      ]),
+
+      theme: "grid",
+
+      headStyles: {
+        fillColor: [16, 185, 129],
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+      },
+
+      styles: {
+        fontSize: 8,
+        cellPadding: 3,
+      },
+
+      alternateRowStyles: {
+        fillColor: [245, 245, 245],
+      },
+    });
+
+    // =========================
+    // POSICION FINAL TABLA
+    // =========================
+
+    let y = doc.lastAutoTable.finalY + 20;
+
+    // =========================
+    // TITULO RESUMEN
+    // =========================
+
+    doc.setFontSize(18);
+
+    doc.text("Resumen económico", 20, y);
+
+    y += 15;
+
+    // =========================
+    // CARD FUNCTION
+    // =========================
+
+    const crearBloque = (titulo, valor, yPos) => {
+      doc.setFillColor(245, 245, 245);
+
+      doc.roundedRect(20, yPos, 170, 18, 4, 4, "F");
 
       doc.setFontSize(11);
 
-      doc.text(`Fecha: ${fecha}`, 20, 55);
+      doc.setTextColor(80);
 
-      // =========================
-      // CARDS
-      // =========================
+      doc.text(titulo, 28, yPos + 11);
 
-      const crearCard = (titulo, valor, x, y, color) => {
-        doc.setFillColor(...color);
+      doc.setFontSize(12);
 
-        doc.roundedRect(x, y, 80, 28, 5, 5, "F");
-
-        doc.setTextColor(255, 255, 255);
-
-        doc.setFontSize(10);
-
-        doc.text(titulo, x + 5, y + 10);
-
-        doc.setFontSize(14);
-
-        doc.text(valor, x + 5, y + 20);
-      };
-
-   crearCard(
-  "Ganancia neta",
-  (gananciaNeta + totalEscaleras).toLocaleString("es-AR", {
-    style: "currency",
-    currency: "ARS",
-  }),
-  110,
-  65,
-  [59, 130, 246]
-);
-    crearCard(
-  "Escaleras",
-  totalEscaleras.toLocaleString("es-AR", {
-    style: "currency",
-    currency: "ARS",
-  }),
-  110,
-  100,
-  [14, 165, 233]
-);
-
-      crearCard(
-        "Comisiones",
-        totalComisiones.toLocaleString("es-AR", {
-          style: "currency",
-          currency: "ARS",
-        }),
-        20,
-        100,
-        [249, 115, 22]
-      );
-
-      crearCard(
-        "Monto por persona",
-        unTercio.toLocaleString("es-AR", {
-          style: "currency",
-          currency: "ARS",
-        }),
-        110,
-        100,
-        [139, 92, 246]
-      );
-
-      // RESET
-      doc.setTextColor(0, 0, 0);
-
-      // =========================
-      // TITULO TABLA
-      // =========================
-
-      doc.setFontSize(18);
-
-      // doc.text("Pedidos del Día", 20, 145);
-doc.text("Pedidos del Día", 20, 185);
-      // =========================
-      // TABLA
-      // =========================
-
-      autoTable(doc, {
-      startY: 195,
-
-        head: [
-          [
-            "Cliente",
-            "Electrodoméstico",
-            "Pago",
-            "Costo",
-          ],
-        ],
-
-        body: pedidosHoy.map((pedido) => [
-          pedido.cliente,
-          pedido.electrodomestico,
-          pedido.medio_pago,
-          Number(pedido.costo_envio).toLocaleString("es-AR", {
-            style: "currency",
-            currency: "ARS",
-          }),
-        ]),
-
-        theme: "grid",
-
-        headStyles: {
-          fillColor: [16, 185, 129],
-          textColor: [255, 255, 255],
-          fontStyle: "bold",
-        },
-
-        styles: {
-          fontSize: 10,
-          cellPadding: 4,
-        },
-
-        alternateRowStyles: {
-          fillColor: [245, 245, 245],
-        },
-      });
-
-      // =========================
-      // FOOTER
-      // =========================
-
-      const finalY = doc.lastAutoTable.finalY || 220;
-
-      doc.setFontSize(10);
-
-      doc.setTextColor(120);
+      doc.setTextColor(0);
 
       doc.text(
-        "Generado automáticamente por FLETAPP",
-        20,
-        finalY + 20
+        valor,
+        180,
+        yPos + 11,
+        { align: "right" }
       );
+    };
 
-      // =========================
-      // SHARE
-      // =========================
+    // =========================
+    // BLOQUES
+    // =========================
 
-      const pdfBlob = doc.output("blob");
+    crearBloque(
+      "Total generado",
+      totalGenerado.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+      y
+    );
 
-      const file = new File(
-        [pdfBlob],
-        // `Resumen-${hoy}.pdf`,
-        `Resumen-${fechaISO}.pdf`,
-        {
-          type: "application/pdf",
-        }
-      );
+    y += 25;
 
-      if (navigator.share && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: "Resumen del Día",
-          text: "Resumen generado desde FLETAPP",
-          files: [file],
-        });
-      } else {
-        doc.save(`Resumen-${hoy}.pdf`);
+    crearBloque(
+      "Total comisiones",
+      totalComisiones.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+      y
+    );
+
+    y += 25;
+
+    crearBloque(
+      "Total escaleras",
+      totalEscaleras.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+      y
+    );
+
+    y += 25;
+
+    crearBloque(
+      "Aporte al fondo",
+      fondo.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+      y
+    );
+
+    y += 25;
+
+    crearBloque(
+      "Monto por persona",
+      unTercio.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+      y
+    );
+
+    y += 35;
+
+    // =========================
+    // FOOTER
+    // =========================
+
+    doc.setFontSize(10);
+
+    doc.setTextColor(120);
+
+    doc.text(
+      "Generado automáticamente por FLETAPP",
+      20,
+      y
+    );
+
+    // =========================
+    // SHARE
+    // =========================
+
+    const pdfBlob = doc.output("blob");
+
+    const file = new File(
+      [pdfBlob],
+      `Resumen-${hoy}.pdf`,
+      {
+        type: "application/pdf",
       }
-    } catch (error) {
-      console.error("Error compartiendo PDF:", error);
-    }
-  };
+    );
 
+    if (
+      navigator.share &&
+      navigator.canShare({ files: [file] })
+    ) {
+      await navigator.share({
+        title: "Resumen del Día",
+        text: "Resumen generado desde FLETAPP",
+        files: [file],
+      });
+    } else {
+      doc.save(`Resumen-${hoy}.pdf`);
+    }
+
+  } catch (error) {
+    console.error("Error compartiendo PDF:", error);
+  }
+};
     // =========================
     // FINALIZAR DIA
     // =========================
@@ -1273,20 +1520,7 @@ doc.text("Pedidos del Día", 20, 185);
       Continuar
     </button>
   </div>
-              {/* <button
-                onClick={() => setMostrarExito(false)}
-                className="
-                  mt-6
-                  w-full
-                  bg-green-600
-                  text-white
-                  py-3
-                  rounded-2xl
-                  font-semibold
-                "
-              >
-                Continuar
-              </button> */}
+               
             </div>
           </div>
         )}
