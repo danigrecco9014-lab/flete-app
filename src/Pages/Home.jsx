@@ -106,54 +106,99 @@ function Home() {
   // TRAER PEDIDOS
   // =========================
 
-  useEffect(() => {
-    verificarCierreDelDia();
-  }, [hoy]);
 
   useEffect(() => {
-    const q = collection(db, "idPedido");
+  const inicioDia = new Date();
+  inicioDia.setHours(0, 0, 0, 0);
 
-    const unsub = onSnapshot(
-      q,
-      (snapshot) => {
-        console.log("Firestore conectado");
+  const finDia = new Date();
+  finDia.setHours(23, 59, 59, 999);
 
-        const pedidos = snapshot.docs.map((doc) => {
-          const data = doc.data();
+  const q = query(
+    collection(db, "idPedido"),
+    where("fecha", ">=", Timestamp.fromDate(inicioDia)),
+    where("fecha", "<=", Timestamp.fromDate(finDia))
+  );
 
-          let fechaPedido = "";
+  const unsub = onSnapshot(
+    q,
+    (snapshot) => {
+      console.log("Firestore conectado");
 
-          if (data.fecha && typeof data.fecha.toDate === "function") {
-            fechaPedido = data.fecha.toDate().toISOString().slice(0, 10);
-          } else if (typeof data.fecha === "string") {
-            fechaPedido = data.fecha.slice(0, 10);
-          }
+      const pedidos = snapshot.docs.map((doc) => {
+        const data = doc.data();
 
-          return {
-            id: doc.id,
-            ...data,
-            fecha: fechaPedido,
-            realizado: data.realizado || false,
-          };
-        });
+        return {
+          id: doc.id,
+          ...data,
+          realizado: data.realizado || false,
+        };
+      });
 
-        const filtrados = pedidos.filter((p) => p.fecha === hoy);
+      console.log("Pedidos:", pedidos);
 
-        console.log("Pedidos:", filtrados);
+      setPedidosHoy(pedidos);
 
-        setPedidosHoy(filtrados);
+      setLoading(false);
+    },
+    (error) => {
+      console.error("ERROR FIRESTORE:", error);
 
-        setLoading(false);
-      },
-      (error) => {
-        console.error("ERROR FIRESTORE:", error);
+      setLoading(false);
+    }
+  );
 
-        setLoading(false);
-      },
-    );
+  return () => unsub();
+}, []);
 
-    return () => unsub();
-  }, [hoy]);
+  // useEffect(() => {
+  //   verificarCierreDelDia();
+  // }, [hoy]);
+
+  // useEffect(() => {
+  //   const q = collection(db, "idPedido");
+
+  //   const unsub = onSnapshot(
+  //     q,
+  //     (snapshot) => {
+  //       console.log("Firestore conectado");
+
+  //       const pedidos = snapshot.docs.map((doc) => {
+  //         const data = doc.data();
+
+  //         let fechaPedido = "";
+
+  //         if (data.fecha && typeof data.fecha.toDate === "function") {
+  //           fechaPedido = data.fecha.toDate().toISOString().slice(0, 10);
+  //         } else if (typeof data.fecha === "string") {
+  //           fechaPedido = data.fecha.slice(0, 10);
+  //         }
+
+  //         return {
+  //           id: doc.id,
+  //           ...data,
+  //           fecha: fechaPedido,
+  //           realizado: data.realizado || false,
+  //         };
+  //       });
+
+  //       const filtrados = pedidos.filter((p) => p.fecha === hoy);
+
+  //       console.log("Pedidos:", filtrados);
+
+  //       setPedidosHoy(filtrados);
+
+  //       setLoading(false);
+  //     },
+  //     (error) => {
+  //       console.error("ERROR FIRESTORE:", error);
+
+  //       setLoading(false);
+  //     },
+  //   );
+
+  //   return () => unsub();
+  // }, [hoy]);
 
   // =========================
   // RECORDATORIOS PENDIENTES
@@ -570,7 +615,14 @@ const compartirResumenWhatsApp = () => {
           <p className="text-sm text-gray-500 font-bold pb-3">{fecha}</p>
         </div>
 
-        <img src={truck} alt="Truck" className="w-60" />
+<img
+  src={truck}
+  alt="Truck"
+  className="w-52"
+  loading="lazy"
+  decoding="async"
+/>
+        {/* <img src={truck} alt="Truck" className="w-60" /> */}
       </div>
 
       {/* STATS */}
