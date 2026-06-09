@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import truck from "../assets/transporte.png";
 import Nav from "../Components/NavMenu";
 import Hora from "../Components/Hora";
@@ -415,116 +416,312 @@ if (datosGuardados) {
 // GENERAR PDF + WHATSAPP
 // =========================
 
-const compartirResumenWhatsApp = () => {
-  const doc = new jsPDF();
+// const compartirResumenWhatsApp = () => {
+//   const doc = new jsPDF();
 
-  let y = 20;
+//   let y = 20;
 
-  doc.setFontSize(22);
-  doc.text("FLETAPP - Resumen del Día", 20, y);
+//   doc.setFontSize(22);
+//   doc.text("FLETAPP - Resumen del Día", 20, y);
 
-  y += 15;
+//   y += 15;
 
-  doc.setFontSize(12);
+//   doc.setFontSize(12);
 
-  doc.text(`Fecha: ${fecha}`, 20, y);
-  y += 10;
+//   doc.text(`Fecha: ${fecha}`, 20, y);
+//   y += 10;
 
-  doc.text(`Pedidos realizados: ${totalRealizados}`, 20, y);
-  y += 10;
+//   doc.text(`Pedidos realizados: ${totalRealizados}`, 20, y);
+//   y += 10;
 
-  doc.text(
-    `Total generado: ${totalGenerado.toLocaleString("es-AR")}`,
-    20,
-    y
-  );
+//   doc.text(
+//     `Total generado: ${totalGenerado.toLocaleString("es-AR")}`,
+//     20,
+//     y
+//   );
 
-  y += 10;
+//   y += 10;
 
-  doc.text(
-    `Comisiones: ${totalComisiones.toLocaleString("es-AR")}`,
-    20,
-    y
-  );
+//   doc.text(
+//     `Comisiones: ${totalComisiones.toLocaleString("es-AR")}`,
+//     20,
+//     y
+//   );
 
-  y += 10;
+//   y += 10;
 
-  doc.text(
-    `Total escaleras: ${totalEscaleras.toLocaleString("es-AR")}`,
-    20,
-    y
-  );
+//   doc.text(
+//     `Total escaleras: ${totalEscaleras.toLocaleString("es-AR")}`,
+//     20,
+//     y
+//   );
 
-  y += 10;
+//   y += 10;
 
-  doc.text(
-    `Ganancia neta: ${gananciaNeta.toLocaleString("es-AR")}`,
-    20,
-    y
-  );
+//   doc.text(
+//     `Ganancia neta: ${gananciaNeta.toLocaleString("es-AR")}`,
+//     20,
+//     y
+//   );
 
-  y += 10;
+//   y += 10;
 
-  doc.text(
-    `Monto por persona: ${unTercio.toLocaleString("es-AR")}`,
-    20,
-    y
-  );
+//   doc.text(
+//     `Monto por persona: ${unTercio.toLocaleString("es-AR")}`,
+//     20,
+//     y
+//   );
 
-  y += 20;
+//   y += 20;
 
-  doc.setFontSize(16);
-  doc.text("Pedidos:", 20, y);
+//   doc.setFontSize(16);
+//   doc.text("Pedidos:", 20, y);
 
-  y += 10;
+//   y += 10;
 
-  pedidosHoy.forEach((pedido, index) => {
+//   pedidosHoy.forEach((pedido, index) => {
+//     doc.setFontSize(11);
+
+//     doc.text(
+//       `${index + 1}. ${pedido.cliente} - ${pedido.electrodomestico}`,
+//       20,
+//       y
+//     );
+
+//     y += 8;
+
+//     doc.text(
+//       `Pago: ${pedido.medio_pago} | $${pedido.costo_envio}`,
+//       25,
+//       y
+//     );
+
+//     y += 12;
+
+//     // NUEVA PAGINA SI SE LLENA
+//     if (y > 260) {
+//       doc.addPage();
+//       y = 20;
+//     }
+//   });
+
+//   // GENERAR PDF
+//   const pdfBlob = doc.output("blob");
+
+//   const file = new File(
+//     [pdfBlob],
+//     `Resumen-${hoy}.pdf`,
+//     {
+//       type: "application/pdf",
+//     }
+//   );
+
+//   // SHARE API
+//   if (navigator.canShare && navigator.canShare({ files: [file] })) {
+//     navigator.share({
+//       title: "Resumen del día",
+//       text: "Resumen generado desde FLETAPP",
+//       files: [file],
+//     });
+//   } else {
+//     // FALLBACK
+//     doc.save(`Resumen-${hoy}.pdf`);
+//   }
+// };
+
+const compartirResumenWhatsApp = async () => {
+  try {
+    const doc = new jsPDF();
+
+    // =========================
+    // HEADER
+    // =========================
+
+    doc.setFillColor(16, 185, 129);
+
+    doc.roundedRect(0, 0, 220, 40, 0, 0, "F");
+
+    doc.setTextColor(255, 255, 255);
+
+    doc.setFontSize(24);
+
+    doc.text("FLETAPP 📦", 20, 20);
+
+    doc.setFontSize(12);
+
+    doc.text("Resumen del Día", 20, 30);
+
+    // RESET COLOR
+    doc.setTextColor(0, 0, 0);
+
+    // =========================
+    // FECHA
+    // =========================
+
     doc.setFontSize(11);
 
-    doc.text(
-      `${index + 1}. ${pedido.cliente} - ${pedido.electrodomestico}`,
+    doc.text(`Fecha: ${fecha}`, 20, 55);
+
+    // =========================
+    // CARDS
+    // =========================
+
+    const crearCard = (titulo, valor, x, y, color) => {
+      doc.setFillColor(...color);
+
+      doc.roundedRect(x, y, 80, 28, 5, 5, "F");
+
+      doc.setTextColor(255, 255, 255);
+
+      doc.setFontSize(10);
+
+      doc.text(titulo, x + 5, y + 10);
+
+      doc.setFontSize(14);
+
+      doc.text(valor, x + 5, y + 20);
+    };
+
+    crearCard(
+      "Total generado",
+      totalGenerado.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
       20,
-      y
+      65,
+      [16, 185, 129]
     );
 
-    y += 8;
+    crearCard(
+      "Ganancia neta",
+      gananciaNeta.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+      110,
+      65,
+      [59, 130, 246]
+    );
+
+    crearCard(
+      "Comisiones",
+      totalComisiones.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+      20,
+      100,
+      [249, 115, 22]
+    );
+
+    crearCard(
+      "Monto por persona",
+      unTercio.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+      110,
+      100,
+      [139, 92, 246]
+    );
+
+    // RESET
+    doc.setTextColor(0, 0, 0);
+
+    // =========================
+    // TITULO TABLA
+    // =========================
+
+    doc.setFontSize(18);
+
+    doc.text("Pedidos del Día", 20, 145);
+
+    // =========================
+    // TABLA
+    // =========================
+
+    autoTable(doc, {
+      startY: 155,
+
+      head: [
+        [
+          "Cliente",
+          "Electrodoméstico",
+          "Pago",
+          "Costo",
+        ],
+      ],
+
+      body: pedidosHoy.map((pedido) => [
+        pedido.cliente,
+        pedido.electrodomestico,
+        pedido.medio_pago,
+        Number(pedido.costo_envio).toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+        }),
+      ]),
+
+      theme: "grid",
+
+      headStyles: {
+        fillColor: [16, 185, 129],
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+      },
+
+      styles: {
+        fontSize: 10,
+        cellPadding: 4,
+      },
+
+      alternateRowStyles: {
+        fillColor: [245, 245, 245],
+      },
+    });
+
+    // =========================
+    // FOOTER
+    // =========================
+
+    const finalY = doc.lastAutoTable.finalY || 220;
+
+    doc.setFontSize(10);
+
+    doc.setTextColor(120);
 
     doc.text(
-      `Pago: ${pedido.medio_pago} | $${pedido.costo_envio}`,
-      25,
-      y
+      "Generado automáticamente por FLETAPP",
+      20,
+      finalY + 20
     );
 
-    y += 12;
+    // =========================
+    // SHARE
+    // =========================
 
-    // NUEVA PAGINA SI SE LLENA
-    if (y > 260) {
-      doc.addPage();
-      y = 20;
+    const pdfBlob = doc.output("blob");
+
+    const file = new File(
+      [pdfBlob],
+      `Resumen-${hoy}.pdf`,
+      {
+        type: "application/pdf",
+      }
+    );
+
+    if (navigator.share && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        title: "Resumen del Día",
+        text: "Resumen generado desde FLETAPP",
+        files: [file],
+      });
+    } else {
+      doc.save(`Resumen-${hoy}.pdf`);
     }
-  });
-
-  // GENERAR PDF
-  const pdfBlob = doc.output("blob");
-
-  const file = new File(
-    [pdfBlob],
-    `Resumen-${hoy}.pdf`,
-    {
-      type: "application/pdf",
-    }
-  );
-
-  // SHARE API
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    navigator.share({
-      title: "Resumen del día",
-      text: "Resumen generado desde FLETAPP",
-      files: [file],
-    });
-  } else {
-    // FALLBACK
-    doc.save(`Resumen-${hoy}.pdf`);
+  } catch (error) {
+    console.error("Error compartiendo PDF:", error);
   }
 };
 
