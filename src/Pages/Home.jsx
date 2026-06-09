@@ -482,16 +482,16 @@ const { default: autoTable } = await import("jspdf-autotable");
   65,
   [59, 130, 246]
 );
-      // crearCard(
-      //   "Ganancia neta",
-      //   gananciaNeta.toLocaleString("es-AR", {
-      //     style: "currency",
-      //     currency: "ARS",
-      //   }),
-      //   110,
-      //   65,
-      //   [59, 130, 246]
-      // );
+    crearCard(
+  "Escaleras",
+  totalEscaleras.toLocaleString("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  }),
+  110,
+  100,
+  [14, 165, 233]
+);
 
       crearCard(
         "Comisiones",
@@ -524,14 +524,14 @@ const { default: autoTable } = await import("jspdf-autotable");
 
       doc.setFontSize(18);
 
-      doc.text("Pedidos del Día", 20, 145);
-
+      // doc.text("Pedidos del Día", 20, 145);
+doc.text("Pedidos del Día", 20, 185);
       // =========================
       // TABLA
       // =========================
 
       autoTable(doc, {
-        startY: 155,
+      startY: 195,
 
         head: [
           [
