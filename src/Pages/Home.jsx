@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import truck from "../assets/transporte.png";
 import Nav from "../Components/NavMenu";
 import Hora from "../Components/Hora";
@@ -80,10 +80,9 @@ function Home() {
   // =========================
   // FECHA
   // =========================
+const [fechaHoy] = useState(new Date());
 
-  const fechaHoy = new Date();
-
-  const hoy = fechaHoy.toISOString().slice(0, 10);
+const hoy = fechaHoy.toISOString().slice(0, 10);
 
   const fecha = fechaHoy.toLocaleDateString("es-AR", {
     weekday: "long",
@@ -381,36 +380,86 @@ if (datosGuardados) {
   // TOTALES
   // =========================
 
-  const totalPedidos = pedidosHoy.length;
+  // =========================
+// TOTALES
+// =========================
 
-  const realizados = pedidosHoy.filter((p) => p.realizado);
+const totalPedidos = pedidosHoy.length;
 
-  const totalRealizados = realizados.length;
+const realizados = pedidosHoy.filter((p) => p.realizado);
 
-  const pendientes = totalPedidos - totalRealizados;
+const totalRealizados = realizados.length;
 
-  const totalGenerado = realizados.reduce(
-    (acc, curr) => acc + (Number(curr.costo_envio) || 0),
-    0,
-  );
+const pendientes = totalPedidos - totalRealizados;
 
-  const totalComisiones = realizados.reduce(
-    (acc, curr) => acc + (Number(curr.comision) || 0),
-    0,
-  );
+// TOTAL ESCALERAS
+const totalEscaleras = realizados.reduce(
+  (acc, curr) => acc + (Number(curr.escaleras) || 0),
+  0,
+);
 
-  const totalEscaleras = realizados.reduce(
-    (acc, curr) => acc + (Number(curr.escaleras) || 0),
-    0,
-  );
+// TOTAL GENERADO
+// AHORA SUMA:
+// - costo_envio
+// - escaleras
+const totalGenerado = realizados.reduce(
+  (acc, curr) =>
+    acc +
+    (Number(curr.costo_envio) || 0) +
+    (Number(curr.escaleras) || 0),
+  0,
+);
 
-  const gananciaNeta = totalGenerado - totalComisiones;
+// TOTAL COMISIONES
+const totalComisiones = realizados.reduce(
+  (acc, curr) => acc + (Number(curr.comision) || 0),
+  0,
+);
+
+// GANANCIA NETA
+const gananciaNeta = totalGenerado - totalComisiones;
+
+// FONDO
+const fondo = gananciaNeta / 4;
+
+// MONTO POR PERSONA
+// YA NO SUMAMOS ESCALERAS OTRA VEZ
+// PORQUE YA ESTÁN DENTRO DE totalGenerado
+const unTercio = (gananciaNeta - fondo) / 3;
+
+  // const totalPedidos = pedidosHoy.length;
+
+  // const realizados = pedidosHoy.filter((p) => p.realizado);
+
+  // const totalRealizados = realizados.length;
+
+  // const pendientes = totalPedidos - totalRealizados;
+
+  // const totalGenerado = realizados.reduce(
+  //   (acc, curr) => acc + (Number(curr.costo_envio) || 0),
+  //   0,
+  // );
+
+  // const totalComisiones = realizados.reduce(
+  //   (acc, curr) => acc + (Number(curr.comision) || 0),
+  //   0,
+  // );
+
+  // const totalEscaleras = realizados.reduce(
+  //   (acc, curr) => acc + (Number(curr.escaleras) || 0),
+  //   0,
+  // );
+
+  // const gananciaNeta = totalGenerado - totalComisiones;
 
  
 
-  const fondo = gananciaNeta / 4;
+  // const fondo = gananciaNeta / 4;
 
-  const unTercio = (gananciaNeta - fondo) / 3 + totalEscaleras / 3;
+  // const unTercio = (gananciaNeta - fondo) / 3 + totalEscaleras / 3;
+
+
+
 
 // =========================
 // GENERAR PDF + WHATSAPP
