@@ -12,9 +12,7 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 
-// import {
-//   getMessaging,
-// } from "firebase/messaging";
+ 
 
 // CONFIG
 const firebaseConfig = {
@@ -54,9 +52,7 @@ const auth = getAuth(app);
 const provider =
   new GoogleAuthProvider();
 
-// 👇 MESSAGING
-// const messaging =
-//   getMessaging(app);
+ 
 
 console.log("Firebase iniciado");
 
@@ -65,5 +61,5 @@ export {
   db,
   auth,
   provider,
-  // messaging,
+ 
 };

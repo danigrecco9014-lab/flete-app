@@ -71,7 +71,7 @@
       local: "Megatone",
       electrodomestico: "",
       costo_envio: "",
-      comision: "",
+      // comision: "",
       medio_pago: "Efectivo",
       escaleras: "",
     });
@@ -299,7 +299,7 @@ const fecha = hoy.toLocaleDateString("es-AR", {
 
         costo_envio: Number(nuevoPedido.costo_envio),
 
-        comision: Number(nuevoPedido.comision),
+        // comision: Number(nuevoPedido.comision),
 
         escaleras: Number(nuevoPedido.escaleras) || 0,
 
@@ -329,7 +329,7 @@ const fecha = hoy.toLocaleDateString("es-AR", {
         local: "Megatone",
         electrodomestico: "",
         costo_envio: "",
-        comision: "",
+        // comision: "",
         escaleras: "",
         medio_pago: "Efectivo",
       });
@@ -394,18 +394,18 @@ const fecha = hoy.toLocaleDateString("es-AR", {
       0,
     );
 
-    const totalComisiones = realizados.reduce(
-      (acc, curr) => acc + (Number(curr.comision) || 0),
-      0,
-    );
+    // const totalComisiones = realizados.reduce(
+    //   (acc, curr) => acc + (Number(curr.comision) || 0),
+    //   0,
+    // );
 
     const totalEscaleras = realizados.reduce(
       (acc, curr) => acc + (Number(curr.escaleras) || 0),
       0,
     );
 
-    const gananciaNeta = totalGenerado - totalComisiones;
-
+    // const gananciaNeta = totalGenerado - totalComisiones;
+  const gananciaNeta = totalGenerado;
   
 
     const fondo = gananciaNeta / 4;
@@ -686,10 +686,10 @@ const compartirResumenWhatsApp = async () => {
           currency: "ARS",
         }),
 
-        Number(pedido.comision || 0).toLocaleString("es-AR", {
-          style: "currency",
-          currency: "ARS",
-        }),
+        // Number(pedido.comision || 0).toLocaleString("es-AR", {
+        //   style: "currency",
+        //   currency: "ARS",
+        // }),
 
         Number(pedido.costo_envio || 0).toLocaleString("es-AR", {
           style: "currency",
@@ -773,14 +773,14 @@ const compartirResumenWhatsApp = async () => {
 
     y += 25;
 
-    crearBloque(
-      "Total comisiones",
-      totalComisiones.toLocaleString("es-AR", {
-        style: "currency",
-        currency: "ARS",
-      }),
-      y
-    );
+    // crearBloque(
+    //   "Total comisiones",
+    //   totalComisiones.toLocaleString("es-AR", {
+    //     style: "currency",
+    //     currency: "ARS",
+    //   }),
+    //   y
+    // );
 
     y += 25;
 
@@ -889,7 +889,7 @@ const compartirResumenWhatsApp = async () => {
           fecha: Timestamp.fromDate(new Date()),
 
           totalGenerado,
-          totalComisiones,
+          // totalComisiones,
           totalEscaleras,
 
           aportadoAlFondo: unTercio,
@@ -1304,7 +1304,7 @@ const compartirResumenWhatsApp = async () => {
                     Transferencia
                   </option>
                 </select>
-                <input
+                {/* <input
                   type="number"
                   name="comision"
                   placeholder="Comisión"
@@ -1312,7 +1312,7 @@ const compartirResumenWhatsApp = async () => {
                   onChange={handleChange}
                   className="w-full border rounded-2xl px-4 py-3"
                   required
-                />
+                /> */}
 
                 <input
                   type="number"
@@ -1382,7 +1382,7 @@ const compartirResumenWhatsApp = async () => {
                   </span>
                 </div>
 
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span className="text-gray-500">Comisiones</span>
 
                   <span className="font-bold text-orange-500">
@@ -1391,7 +1391,7 @@ const compartirResumenWhatsApp = async () => {
                       currency: "ARS",
                     })}
                   </span>
-                </div>
+                </div> */}
 
                 <div className="border-t pt-4 flex justify-between">
                   <span className="font-semibold">Ganancia neta</span>
