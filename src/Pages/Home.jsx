@@ -4,6 +4,7 @@
   import truck from "../assets/transporte.png";
   import Nav from "../Components/NavMenu";
   import Hora from "../Components/Hora";
+  import toast from "react-hot-toast";
 
   import {
     MapPin,
@@ -318,7 +319,7 @@ const fecha = hoy.toLocaleDateString("es-AR", {
   }
 
       await addDoc(collection(db, "idPedido"), nuevo);
-
+toast.success("Pedido agregado correctamente");
       // CERRAR MODAL
       setMostrarFormulario(false);
 
@@ -412,208 +413,8 @@ const fecha = hoy.toLocaleDateString("es-AR", {
 
     const unTercio = (gananciaNeta - fondo) / 3 + totalEscaleras / 3;
 
-  // =========================
-  // GENERAR PDF + WHATSAPP
-  // =========================
- 
-
-//   const compartirResumenWhatsApp = async () => {
-//     const { default: jsPDF } = await import("jspdf");
-// const { default: autoTable } = await import("jspdf-autotable");
-//     try {
-//       const doc = new jsPDF();
-
-//       // =========================
-//       // HEADER
-//       // =========================
-
-//       doc.setFillColor(16, 185, 129);
-
-//       doc.roundedRect(0, 0, 220, 40, 0, 0, "F");
-
-//       doc.setTextColor(255, 255, 255);
-
-//       doc.setFontSize(24);
-
-//       doc.text("FLETAPP 📦", 20, 20);
-
-//       doc.setFontSize(12);
-
-//       doc.text("Resumen del Día", 20, 30);
-
-//       // RESET COLOR
-//       doc.setTextColor(0, 0, 0);
-
-//       // =========================
-//       // FECHA
-//       // =========================
-
-//       doc.setFontSize(11);
-
-//       doc.text(`Fecha: ${fecha}`, 20, 55);
-
-//       // =========================
-//       // CARDS
-//       // =========================
-
-//       const crearCard = (titulo, valor, x, y, color) => {
-//         doc.setFillColor(...color);
-
-//         doc.roundedRect(x, y, 80, 28, 5, 5, "F");
-
-//         doc.setTextColor(255, 255, 255);
-
-//         doc.setFontSize(10);
-
-//         doc.text(titulo, x + 5, y + 10);
-
-//         doc.setFontSize(14);
-
-//         doc.text(valor, x + 5, y + 20);
-//       };
-
-//    crearCard(
-//   "Ganancia neta",
-//   (gananciaNeta + totalEscaleras).toLocaleString("es-AR", {
-//     style: "currency",
-//     currency: "ARS",
-//   }),
-//   110,
-//   65,
-//   [59, 130, 246]
-// );
-//     crearCard(
-//   "Escaleras",
-//   totalEscaleras.toLocaleString("es-AR", {
-//     style: "currency",
-//     currency: "ARS",
-//   }),
-//   110,
-//   100,
-//   [14, 165, 233]
-// );
-
-//       crearCard(
-//         "Comisiones",
-//         totalComisiones.toLocaleString("es-AR", {
-//           style: "currency",
-//           currency: "ARS",
-//         }),
-//         20,
-//         100,
-//         [249, 115, 22]
-//       );
-
-//       crearCard(
-//         "Monto por persona",
-//         unTercio.toLocaleString("es-AR", {
-//           style: "currency",
-//           currency: "ARS",
-//         }),
-//         110,
-//         100,
-//         [139, 92, 246]
-//       );
-
-//       // RESET
-//       doc.setTextColor(0, 0, 0);
-
-//       // =========================
-//       // TITULO TABLA
-//       // =========================
-
-//       doc.setFontSize(18);
-
-//       // doc.text("Pedidos del Día", 20, 145);
-// doc.text("Pedidos del Día", 20, 185);
-//       // =========================
-//       // TABLA
-//       // =========================
-
-//       autoTable(doc, {
-//       startY: 195,
-
-//         head: [
-//           [
-//             "Cliente",
-//             "Electrodoméstico",
-//             "Pago",
-//             "Costo",
-//           ],
-//         ],
-
-//         body: pedidosHoy.map((pedido) => [
-//           pedido.cliente,
-//           pedido.electrodomestico,
-//           pedido.medio_pago,
-//           Number(pedido.costo_envio).toLocaleString("es-AR", {
-//             style: "currency",
-//             currency: "ARS",
-//           }),
-//         ]),
-
-//         theme: "grid",
-
-//         headStyles: {
-//           fillColor: [16, 185, 129],
-//           textColor: [255, 255, 255],
-//           fontStyle: "bold",
-//         },
-
-//         styles: {
-//           fontSize: 10,
-//           cellPadding: 4,
-//         },
-
-//         alternateRowStyles: {
-//           fillColor: [245, 245, 245],
-//         },
-//       });
-
-//       // =========================
-//       // FOOTER
-//       // =========================
-
-//       const finalY = doc.lastAutoTable.finalY || 220;
-
-//       doc.setFontSize(10);
-
-//       doc.setTextColor(120);
-
-//       doc.text(
-//         "Generado automáticamente por FLETAPP",
-//         20,
-//         finalY + 20
-//       );
-
-//       // =========================
-//       // SHARE
-//       // =========================
-
-//       const pdfBlob = doc.output("blob");
-
-//       const file = new File(
-//         [pdfBlob],
-//         // `Resumen-${hoy}.pdf`,
-//         `Resumen-${fechaISO}.pdf`,
-//         {
-//           type: "application/pdf",
-//         }
-//       );
-
-//       if (navigator.share && navigator.canShare({ files: [file] })) {
-//         await navigator.share({
-//           title: "Resumen del Día",
-//           text: "Resumen generado desde FLETAPP",
-//           files: [file],
-//         });
-//       } else {
-//         doc.save(`Resumen-${hoy}.pdf`);
-//       }
-//     } catch (error) {
-//       console.error("Error compartiendo PDF:", error);
-//     }
-//   };
+   
+    
 const compartirResumenWhatsApp = async () => {
   const { default: jsPDF } = await import("jspdf");
   const { default: autoTable } = await import("jspdf-autotable");
