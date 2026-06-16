@@ -22,18 +22,7 @@
 
   import { db } from "../firebase/firebase";
 
-  // import {
-  //   collection,
-  //   getDocs,
-  //   updateDoc,
-  //   doc,
-  //   addDoc,
-  //   Timestamp,
-  //   query,
-  //   where,
-  //   onSnapshot,
-  //   deleteDoc,
-  // } from "firebase/firestore";
+ 
 
 import {
   collection,

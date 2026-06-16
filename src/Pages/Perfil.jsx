@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, Lock, LogOut, ShieldCheck } from "lucide-react";
 
+
 import Nav from "../Components/NavMenu";
 
 function Perfil() {
@@ -454,7 +455,7 @@ const cerrarSesion = () => {
           )}
         </div>
       </div>
- 
+ <Nav/>
     </div>
   );
 }
