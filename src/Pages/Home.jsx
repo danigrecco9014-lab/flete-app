@@ -22,18 +22,29 @@
 
   import { db } from "../firebase/firebase";
 
+  // import {
+  //   collection,
+  //   getDocs,
+  //   updateDoc,
+  //   doc,
+  //   addDoc,
+  //   Timestamp,
+  //   query,
+  //   where,
+  //   onSnapshot,
+  //   deleteDoc,
+  // } from "firebase/firestore";
+
   import {
-    collection,
-    getDocs,
-    updateDoc,
-    doc,
-    addDoc,
-    Timestamp,
-    query,
-    where,
-    onSnapshot,
-    deleteDoc,
-  } from "firebase/firestore";
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  Timestamp,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 
   function Home() {
     // =========================
@@ -153,54 +164,6 @@ const fecha = hoy.toLocaleDateString("es-AR", {
     return () => unsub();
   }, []);
 
-    // useEffect(() => {
-  
-    // }, [hoy]);
-
-    // useEffect(() => {
-    //   const q = collection(db, "idPedido");
-
-    //   const unsub = onSnapshot(
-    //     q,
-    //     (snapshot) => {
-    //        
-
-    //       const pedidos = snapshot.docs.map((doc) => {
-    //         const data = doc.data();
-
-    //         let fechaPedido = "";
-
-    //         if (data.fecha && typeof data.fecha.toDate === "function") {
-    //           fechaPedido = data.fecha.toDate().toISOString().slice(0, 10);
-    //         } else if (typeof data.fecha === "string") {
-    //           fechaPedido = data.fecha.slice(0, 10);
-    //         }
-
-    //         return {
-    //           id: doc.id,
-    //           ...data,
-    //           fecha: fechaPedido,
-    //           realizado: data.realizado || false,
-    //         };
-    //       });
-
-    //       const filtrados = pedidos.filter((p) => p.fecha === hoy);
-
-    //       console.log("Pedidos:", filtrados);
-
-    //       setPedidosHoy(filtrados);
-
-    //       setLoading(false);
-    //     },
-    //     (error) => {
-    //       console.error("ERROR FIRESTORE:", error);
-
-    //       setLoading(false);
-    //     },
-    //   );
-
-    //   return () => unsub();
-    // }, [hoy]);
 
     // =========================
     // RECORDATORIOS PENDIENTES
@@ -487,11 +450,6 @@ const compartirResumenWhatsApp = async () => {
           currency: "ARS",
         }),
 
-        // Number(pedido.comision || 0).toLocaleString("es-AR", {
-        //   style: "currency",
-        //   currency: "ARS",
-        // }),
-
         Number(pedido.costo_envio || 0).toLocaleString("es-AR", {
           style: "currency",
           currency: "ARS",
@@ -666,47 +624,108 @@ const compartirResumenWhatsApp = async () => {
     // =========================
     // FINALIZAR DIA
     // =========================
+const finalizarDia = async () => {
+  if (pendientes > 0) {
+    setMostrarPendientes(true);
+    return;
+  }
 
-    const finalizarDia = async () => {
-      // VALIDAR PEDIDOS PENDIENTES
-      if (pendientes > 0) {
-        setMostrarPendientes(true);
+  try {
+    const inicioDia = new Date();
+    inicioDia.setHours(0, 0, 0, 0);
 
-        return;
-      }
+    const finDia = new Date();
+    finDia.setHours(23, 59, 59, 999);
 
-      // EVITAR DUPLICADOS
-      if (datosGuardados) {
-        setMostrarModal(false);
+    const q = query(
+      collection(db, "fondo"),
+      where("fecha", ">=", Timestamp.fromDate(inicioDia)),
+      where("fecha", "<=", Timestamp.fromDate(finDia))
+    );
 
-        setMostrarYaGuardado(true);
+    const snapshot = await getDocs(q);
 
-        return;
-      }
+    // =========================
+    // SI YA EXISTE → ACTUALIZAR
+    // =========================
 
-      try {
-        await addDoc(collection(db, "fondo"), {
-       
-          fecha: Timestamp.fromDate(new Date()),
+    if (!snapshot.empty) {
+      const documento = snapshot.docs[0];
 
+      await updateDoc(
+        doc(db, "fondo", documento.id),
+        {
           totalGenerado,
-          // totalComisiones,
           totalEscaleras,
-
-          aportadoAlFondo: unTercio,
-
+          aportadoAlFondo: fondo,
           guardado: true,
-        });
+        }
+      );
+    }
 
-        setDatosGuardados(true);
+    // =========================
+    // SI NO EXISTE → CREAR
+    // =========================
 
-        setMostrarModal(false);
+    else {
+      await addDoc(collection(db, "fondo"), {
+        fecha: Timestamp.fromDate(new Date()),
+        totalGenerado,
+        totalEscaleras,
+        aportadoAlFondo: fondo,
+        guardado: true,
+      });
+    }
 
-        setMostrarExito(true);
-      } catch (error) {
-        console.error("Error al guardar:", error);
-      }
-    };
+    setDatosGuardados(true);
+
+    setMostrarModal(false);
+
+    setMostrarExito(true);
+  } catch (error) {
+    console.error("Error al guardar:", error);
+  }
+};
+    // const finalizarDia = async () => {
+    //   // VALIDAR PEDIDOS PENDIENTES
+    //   if (pendientes > 0) {
+    //     setMostrarPendientes(true);
+
+    //     return;
+    //   }
+
+    //   // EVITAR DUPLICADOS
+    //   if (datosGuardados) {
+    //     setMostrarModal(false);
+
+    //     setMostrarYaGuardado(true);
+
+    //     return;
+    //   }
+
+    //   try {
+    //     await addDoc(collection(db, "fondo"), {
+       
+    //       fecha: Timestamp.fromDate(new Date()),
+
+    //       totalGenerado,
+    //       // totalComisiones,
+    //       totalEscaleras,
+
+    //       aportadoAlFondo: unTercio,
+
+    //       guardado: true,
+    //     });
+
+    //     setDatosGuardados(true);
+
+    //     setMostrarModal(false);
+
+    //     setMostrarExito(true);
+    //   } catch (error) {
+    //     console.error("Error al guardar:", error);
+    //   }
+    // };
     // =========================
     // JSX
     // =========================
