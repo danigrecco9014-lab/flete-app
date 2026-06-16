@@ -85,10 +85,10 @@ const Fondo = () => {
     totalAportado - totalGastado;
 
   return (
-    <div className="min-h-screen bg-blue-400 pb-32">
+    <div className="min-h-screen bg-whiteee-100 pb-32">
       {/* HEADER */}
 
-      <div className="bg-emerald-600 p-6 rounded-b-3xl shadow-lg">
+      <div className="bg-blue-600 p-6 rounded-b-3xl shadow-lg">
         <div className="flex items-center gap-3">
           <div className="bg-white/20 p-3 rounded-2xl">
             <Wallet className="text-white" />

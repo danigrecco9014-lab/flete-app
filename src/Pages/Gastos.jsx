@@ -319,7 +319,7 @@ export default function Gastos() {
 
   return (
 
-    <div className="min-h-screen bg-orange-400 pb-28">
+    <div className="min-h-screen bg-white-100 pb-28">
 
       {/* HEADER  bg-gradient-to-r
           from-red-500
@@ -339,7 +339,7 @@ export default function Gastos() {
 
           <div
             className="
-              bg-white/20
+              bg-orange/20
               p-3
               rounded-2xl
             "
