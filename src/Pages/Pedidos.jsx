@@ -805,7 +805,7 @@ const Pedidos = () => {
     costo_envio: "",
     medio_pago: "Efectivo",
     local: "Megatone",
-    // comision: "",
+
     escaleras: "",
     fecha: Timestamp.now(),
   });
@@ -866,7 +866,6 @@ const Pedidos = () => {
 
       costo_envio: Number(formData.costo_envio),
 
-      // comision: Number(formData.comision),
 
       escaleras: Number(formData.escaleras),
 
@@ -937,7 +936,7 @@ const Pedidos = () => {
       costo_envio: "",
       medio_pago: "Efectivo",
       local: "Megatone",
-      // comision: "",
+    
       escaleras: "",
       fecha: Timestamp.now(),
     });
@@ -1084,7 +1083,7 @@ const Pedidos = () => {
               </div>
 
               {/* PRECIOS */}
-              <div className="grid grid-cols-3 gap-3 mt-5">
+              <div className="grid grid-cols-2 gap-3 mt-5">
 
                 <div className="bg-emerald-50 rounded-2xl p-3 text-center">
                   <p className="text-xs text-gray-500">
@@ -1095,16 +1094,7 @@ const Pedidos = () => {
                     ${pedido.costo_envio}
                   </p>
                 </div>
-{/* 
-                <div className="bg-orange-50 rounded-2xl p-3 text-center">
-                  <p className="text-xs text-gray-500">
-                    Comisión
-                  </p>
 
-                  <p className="font-bold text-orange-600">
-                    ${pedido.comision}
-                  </p>
-                </div> */}
 
                 <div className="bg-blue-50 rounded-2xl p-3 text-center">
                   <p className="text-xs text-gray-500">
@@ -1385,7 +1375,7 @@ const Pedidos = () => {
               </div>
 
               {/* GRID */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3">
 
                 {/* COSTO ENVIO */}
                 <div>
@@ -1414,32 +1404,7 @@ const Pedidos = () => {
                   />
                 </div>
 
-                {/* COMISION */}
-                {/* <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Comisión
-                  </label>
-
-                  <input
-                    type="number"
-                    name="comision"
-                    value={formData.comision}
-                    onChange={handleChange}
-                    className="
-                      w-full
-                      mt-1
-                      bg-gray-100
-                      border-2
-                      border-transparent
-                      focus:border-emerald-500
-                      outline-none
-                      rounded-2xl
-                      px-4
-                      py-3
-                    "
-                    required
-                  />
-                </div> */}
+                
 
               </div>
 
