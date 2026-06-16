@@ -1,4 +1,5 @@
  
+
 import { initializeApp } from "firebase/app";
 
 import {
@@ -39,16 +40,12 @@ const app =
   initializeApp(firebaseConfig);
 
 // FIRESTORE IOS FIX
-// const db = initializeFirestore(app, {
-//   cacheSizeBytes:
-//     CACHE_SIZE_UNLIMITED,
-
-//   // experimentalForceLongPolling:
-//   //   true,
-// });
-
 const db = initializeFirestore(app, {
-  cacheSizeBytes: 40 * 1024 * 1024, // 40MB
+  cacheSizeBytes:
+    CACHE_SIZE_UNLIMITED,
+
+  experimentalForceLongPolling:
+    true,
 });
 
 // AUTH
@@ -61,7 +58,7 @@ const provider =
 // const messaging =
 //   getMessaging(app);
 
-// console.log("Firebase iniciado");
+console.log("Firebase iniciado");
 
 // EXPORTS
 export {

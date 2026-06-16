@@ -155,10 +155,10 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
-import { registerSW } from "virtual:pwa-register";
+// import { registerSW } from "virtual:pwa-register";
 
 // registrar SW después de imports
-registerSW({ immediate: true });
+// registerSW({ immediate: true });
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
