@@ -35,15 +35,17 @@
   //   deleteDoc,
   // } from "firebase/firestore";
 
-  import {
+import {
   collection,
-  addDoc,
   getDocs,
-  query,
-  where,
-  Timestamp,
   updateDoc,
   doc,
+  addDoc,
+  Timestamp,
+  query,
+  where,
+  onSnapshot,
+  deleteDoc,
 } from "firebase/firestore";
 
   function Home() {
