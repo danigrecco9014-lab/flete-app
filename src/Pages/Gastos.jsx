@@ -326,7 +326,7 @@ export default function Gastos() {
           to-orange-500*/}
       <div
         className="
-         
+         bg-orange-400
           px-5
           pt-8
           pb-10
@@ -339,7 +339,7 @@ export default function Gastos() {
 
           <div
             className="
-              bg-orange/20
+              bg-white/20
               p-3
               rounded-2xl
             "

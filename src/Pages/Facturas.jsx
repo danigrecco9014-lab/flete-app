@@ -42,6 +42,12 @@ const [modoEdicion, setModoEdicion] =
 const [idEditar, setIdEditar] =
   useState(null);
 
+const [mostrarEliminar, setMostrarEliminar] =
+  useState(false);
+
+const [facturaEliminar, setFacturaEliminar] =
+  useState(null);
+
   const [nuevaFactura, setNuevaFactura] =
     useState({
       detalle: "",
@@ -277,20 +283,28 @@ const [idEditar, setIdEditar] =
   setMostrarFormulario(true);
 };
 
-const eliminarFactura = async (id) => {
+const eliminarFactura = (id) => {
 
-  const confirmar =
-    window.confirm(
-      "¿Eliminar esta factura?"
-    );
+  setFacturaEliminar(id);
 
-  if (!confirmar) return;
+  setMostrarEliminar(true);
+};
+
+const confirmarEliminar = async () => {
 
   try {
 
     await deleteDoc(
-      doc(db, "facturas", id)
+      doc(
+        db,
+        "facturas",
+        facturaEliminar
+      )
     );
+
+    setMostrarEliminar(false);
+
+    setFacturaEliminar(null);
 
   } catch (error) {
 
@@ -300,26 +314,25 @@ const eliminarFactura = async (id) => {
 
   return (
 
-    <div className="min-h-screen bg-gray-100 pb-28 px-4 pt-4">
+    <div className="min-h-screen bg-gray-100 pb-28 ">
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between  bg-indigo-500 rounded-b-3xl  items-center mb-6 p-4">
 
-        <div>
+        <div >
 
-          <h1 className="text-4xl font-bold">
+          <h1 className="text-4xl text-white font-bold">
 
             Facturas
 
           </h1>
 
-          <p className="text-gray-500">
+          <p className="text-white">
 
             Gestión de facturas
 
           </p>
         </div>
-
         <button
           onClick={() =>
             setMostrarFormulario(true)
@@ -335,19 +348,20 @@ const eliminarFactura = async (id) => {
           <Plus />
 
         </button>
-      </div>
+ </div>
+    
 
       {/* ========================= */}
       {/* PENDIENTES */}
       {/* ========================= */}
 
-      <h2 className="text-2xl font-bold mb-4">
+      <h2 className="text-2xl font-bold m-4">
 
         Pendientes de pago
 
       </h2>
 
-      <div className="space-y-4 mb-8">
+      <div className="space-y-4 m-8">
 
         {pendientes.length === 0 ? (
 
@@ -371,6 +385,7 @@ const eliminarFactura = async (id) => {
                 rounded-3xl
                 p-5
                 shadow-sm
+                m-4
               "
             >
 
@@ -546,13 +561,13 @@ const eliminarFactura = async (id) => {
       {/* PAGADAS */}
       {/* ========================= */}
 
-      <h2 className="text-2xl font-bold mb-4">
+      <h2 className="text-2xl font-bold m-4">
 
         Facturas pagadas
 
       </h2>
 
-      <div className="space-y-4">
+      <div className="space-y-4 m-4">
 
         {pagadas.length === 0 ? (
 
@@ -760,7 +775,76 @@ const eliminarFactura = async (id) => {
             </form>
           </div>
         </div>
+        
       )}
+      {/* MODAL ELIMINAR */}
+
+{mostrarEliminar && (
+
+  <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 px-4">
+
+    <div className="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl">
+
+      <div className="bg-red-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto">
+
+        <Trash2
+          size={40}
+          className="text-red-500"
+        />
+
+      </div>
+
+      <h2 className="text-2xl font-bold mt-5">
+
+        Eliminar factura
+
+      </h2>
+
+      <p className="text-gray-500 mt-2">
+
+        Esta acción no se puede deshacer.
+
+      </p>
+
+      <div className="flex gap-3 mt-6">
+
+        <button
+          onClick={() => {
+            setMostrarEliminar(false);
+            setFacturaEliminar(null);
+          }}
+          className="
+            flex-1
+            bg-gray-200
+            py-3
+            rounded-2xl
+            font-semibold
+          "
+        >
+          Cancelar
+        </button>
+
+        <button
+          onClick={confirmarEliminar}
+          className="
+            flex-1
+            bg-red-500
+            text-white
+            py-3
+            rounded-2xl
+            font-semibold
+          "
+        >
+          Eliminar
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
 
       <NavMenu />
 
