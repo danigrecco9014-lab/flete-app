@@ -1,5 +1,5 @@
   
-  import React, { useEffect, useState, useMemo } from "react";
+  import React, { useEffect, useState } from "react";
   import { Link } from "react-router-dom";
   import truck from "../assets/transporte.png";
   import Nav from "../Components/NavMenu";
@@ -349,17 +349,11 @@ toast.success("Pedido agregado correctamente");
       0,
     );
 
-    // const totalComisiones = realizados.reduce(
-    //   (acc, curr) => acc + (Number(curr.comision) || 0),
-    //   0,
-    // );
-
     const totalEscaleras = realizados.reduce(
       (acc, curr) => acc + (Number(curr.escaleras) || 0),
       0,
     );
 
-    // const gananciaNeta = totalGenerado - totalComisiones;
   const gananciaNeta = totalGenerado;
   
 
@@ -576,7 +570,7 @@ const compartirResumenWhatsApp = async () => {
     doc.setTextColor(120);
 
     doc.text(
-      "Generado automáticamente por FLETAPP",
+      "Resumen del día",
       20,
       y
     );
